@@ -13,7 +13,7 @@ Pickgood is a software interface connecting your shop's API (e.g., BillBee) with
 
 - Invoice (_invoiceID_, status)
 - Packing_Invoice (_↑invoiceID_, ↑current_station, packing_status)
-- Station_Packed_Product (_↑invoiceID_, _↑station_, _↑productID_, ↑userID)
+- Station_Packed_Product (_↑invoiceID_, ↑station, _↑productID_, ↑userID)
 
   - // When a station packed their part of the invoice
 
