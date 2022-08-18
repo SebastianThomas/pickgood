@@ -6,6 +6,9 @@ import { Server as SocketIOServer } from 'socket.io'
 import dotenv from 'dotenv'
 dotenv.config()
 
+import initAssocs from './dao/initAssocs'
+initAssocs()
+
 // Express server and SocketIO:
 // Initialize Express and socket.io server with NodeJS HTTP module
 const app = express()
