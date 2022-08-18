@@ -1,0 +1,8 @@
+{
+  "dao": {
+    "useParanoidTables": false
+  },
+  "types": {
+    "product": {}
+  }
+}
