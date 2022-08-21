@@ -6,6 +6,7 @@ import ProductAtStationModel from './models/ProductAtStation'
 import PackingInvoiceModel from './models/PackingInvoice'
 import InvoiceModel from './models/Invoice'
 import StationPackedProductModel from './models/StationPackedProduct'
+import RefreshTokenModel from './models/RefreshToken'
 
 export default () => {
   ProductAtStationModel.belongsTo(StationModel, {
@@ -52,5 +53,9 @@ export default () => {
       name: 'stationName',
       allowNull: false,
     },
+  })
+
+  RefreshTokenModel.belongsTo(UserModel, {
+    foreignKey: 'userID',
   })
 }
