@@ -1,7 +1,8 @@
 import { PackingInvoice } from 'pickgood-types'
 import { StationNameType } from 'pickgood-types/lib/stations/Station'
-import { DataTypes, Model } from 'sequelize'
+import { Association, DataTypes, Model, NonAttribute } from 'sequelize'
 import sequelize from '../../state/sequelize'
+import Invoice from './Invoice'
 
 const packingInvoiceStatus = <const>[
   'Pending',
@@ -21,6 +22,11 @@ class PackingInvoiceModel
   declare invoiceID: number
   declare currentStation: StationNameType
   declare packingStatus: InvoiceStatusType
+
+  declare invoice: NonAttribute<Invoice>
+  declare static associations: {
+    invoice: Association<PackingInvoiceModel, Invoice>
+  }
 }
 PackingInvoiceModel.init(
   {

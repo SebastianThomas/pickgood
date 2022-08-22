@@ -31,7 +31,20 @@ io.on('connection', socket => {
   createListeners(newSocket)
 })
 
-// Handle production builds
+// USE ROUTES
+
+import usersRouter from './routes/users'
+import authRouter from './routes/auth'
+import productsRouter from './routes/products'
+import invoicesRouter from './routes/invoices'
+import stationsRouter from './routes/stations'
+app.use('/api/users', usersRouter)
+app.use('/api/auth', authRouter)
+app.use('/api/products', productsRouter)
+app.use('/api/invoices', invoicesRouter)
+app.use('/api/stations', stationsRouter)
+
+// Handle production frontend builds (configured for Docker deployment)
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(__dirname + '/frontend-dist/'))
 

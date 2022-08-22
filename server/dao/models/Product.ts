@@ -1,6 +1,7 @@
 import { ProductType } from 'pickgood-types'
-import { DataTypes, Model } from 'sequelize'
+import { Association, DataTypes, Model, NonAttribute } from 'sequelize'
 import sequelize from '../../state/sequelize'
+import ProductImages from './ProductImages'
 
 class ProductModel extends Model implements ProductType {
   declare productID: number
@@ -14,6 +15,18 @@ class ProductModel extends Model implements ProductType {
   declare available: number
   declare last_ordered: string
   declare last_stock_control: string
+
+  declare images?: NonAttribute<string[]>
+
+  declare static associations: {
+    images: Association<ProductModel, ProductImages>
+  }
+
+  static async getGeneralInformation(): Promise<{ totalProductCount: number }> {
+    const totalProductCount = await ProductModel.count()
+
+    return { totalProductCount }
+  }
 }
 ProductModel.init(
   {

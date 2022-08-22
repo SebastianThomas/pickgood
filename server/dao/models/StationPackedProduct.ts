@@ -1,7 +1,10 @@
 import { StationPackedProduct } from 'pickgood-types'
 import { StationNameType } from 'pickgood-types/lib/stations/Station'
-import { DataTypes, Model } from 'sequelize'
+import { Association, DataTypes, Model, NonAttribute } from 'sequelize'
 import sequelize from '../../state/sequelize'
+import Invoice from './Invoice'
+import Product from './Product'
+import Station from './Station'
 
 class StationPackedProductModel
   extends Model
@@ -12,6 +15,16 @@ class StationPackedProductModel
   declare stationName: StationNameType
   declare userID: number
   declare quantity: number
+
+  declare product: NonAttribute<Product>
+  declare invoice: NonAttribute<Invoice>
+  declare station: NonAttribute<Station>
+
+  declare static associations: {
+    product: Association<StationPackedProductModel, Product>
+    invoice: Association<StationPackedProductModel, Invoice>
+    station: Association<StationPackedProductModel, Station>
+  }
 }
 StationPackedProductModel.init(
   {
