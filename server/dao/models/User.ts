@@ -1,6 +1,15 @@
-import { DataTypes, Model } from 'sequelize'
+import {
+  Association,
+  CreationOptional,
+  DataTypes,
+  ForeignKey,
+  InferCreationAttributes,
+  Model,
+  NonAttribute,
+  Optional,
+} from 'sequelize'
 
-import { User, Station } from 'pickgood-types'
+import { User, Station, IDType, UserRank } from 'pickgood-types'
 import { StationNameType } from 'pickgood-types/lib/stations/Station'
 
 import bcrypt from 'bcrypt'
@@ -11,37 +20,47 @@ import { getHashFromIntID, getIntIDFromHash } from '../../util/dbutils'
 import config from '../../state/configuration'
 
 export type UserAtStation = User<string> & {
-  station: Station
+  station?: Station
 }
 
 const saltRounds = config.auth.saltRounds
 
-class UserModel extends Model implements User<string> {
-  declare userID: string
+type UserWithPwdType<I extends IDType> = User<I> & { password: string }
+
+class UserModel
+  extends Model<UserWithPwdType<number>, InferCreationAttributes<UserModel>>
+  implements User<string>
+{
+  declare userID: CreationOptional<string>
   declare firstName: string
   declare lastName: string
   declare password: string
-  declare stationName: StationNameType | null
+  declare stationName: CreationOptional<ForeignKey<StationNameType | null>>
+  declare rank: CreationOptional<UserRank>
+
+  declare station?: NonAttribute<StationModel>
+
+  declare static associations: {
+    station: Association<UserModel, StationModel>
+  }
 
   static async findById(id: string): Promise<UserModel | null> {
     return await UserModel.findByPk(Number(getIntIDFromHash(id)))
   }
 
   static async getUserAtStation(userId: string): Promise<UserAtStation | null> {
-    const user = await this.findOne({
+    const user: UserAtStation | null = await this.findOne<UserModel>({
       where: { userID: userId },
+      include: [UserModel.associations.station],
     })
     if (user === null) return null
     // Build to use native sequelize
-    const station = await StationModel.findOne({
-      where: { name: user.stationName },
-    })
-    if (station === null) return null
+    // const station = await StationModel.findOne({
+    //   where: { name: user.stationName },
+    // })
+    // return {...user, station}
 
-    return {
-      ...user,
-      station,
-    }
+    return user
   }
 
   /**
@@ -85,7 +104,7 @@ class UserModel extends Model implements User<string> {
   }
 
   static async updatePwd(user: UserModel, newPwd: string): Promise<UserModel> {
-    return await user.update({ password: UserModel.hashPwd(newPwd) })
+    return await user.update({ password: await UserModel.hashPwd(newPwd) })
   }
 }
 UserModel.init(
@@ -110,6 +129,14 @@ UserModel.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    stationName: {
+      type: DataTypes.STRING,
+    },
+    rank: {
+      type: DataTypes.ENUM(UserRank.Administrator, UserRank.User),
+      allowNull: false,
+      defaultValue: UserRank.User,
     },
   },
   { sequelize, modelName: 'User' }

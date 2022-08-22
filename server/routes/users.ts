@@ -1,6 +1,6 @@
 import express from 'express'
 import { body, validationResult } from 'express-validator'
-import User from '../dao/models/User'
+import User, { UserAtStation } from '../dao/models/User'
 import { UserRecord } from '../types/UserRecord'
 import { requireAuthenticated } from '../middleware/authMiddleware'
 
@@ -21,7 +21,10 @@ const router = express.Router()
 router.get(
   '/',
   requireAuthenticated,
-  (_req: express.Request, res: express.Response<{}, UserRecord>) => {
+  (
+    _req: express.Request,
+    res: express.Response<{ user?: User | null; ok: boolean }, UserRecord>
+  ) => {
     res.status(200).json({
       ok: true,
       user: res.locals.user,
@@ -31,8 +34,11 @@ router.get(
 
 router.get(
   '/:id',
-  async (req: express.Request<{ id: string }>, res: express.Response) => {
-    const user = await User.findById(req.params.id)
+  async (
+    req: express.Request<{ id: string }>,
+    res: express.Response<{ user?: UserAtStation; error?: string }>
+  ) => {
+    const user = await User.getUserAtStation(req.params.id)
     return user
       ? res.status(200).json({
           user,
@@ -79,7 +85,10 @@ router.put(
   body('password').trim().isLength({ min: 8 }),
   body('passwordCtrl').trim().isLength({ min: 8 }),
   validateResult,
-  async (req, res: express.Response<{}, UserRecord>) => {
+  async (
+    req: express.Request<{ password: string; passwordCtrl: string }>,
+    res: express.Response<{}, UserRecord>
+  ) => {
     const user = res.locals.user
     if (typeof user === 'undefined' || user === null)
       return res.status(403).json({ error: 'User is not authenticated!' })

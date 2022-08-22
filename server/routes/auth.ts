@@ -44,6 +44,7 @@ router.post(
         refreshToken,
         accessToken,
         userInfo,
+        currentStation: userInfo.stationName, // TODO: Compare current station with this in frontend and potentially update
       })
     } catch (err: any) {
       res.status(err.statusCode || 400).json({ error: err.message })
