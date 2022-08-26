@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { ref, Ref } from 'vue'
 import { io } from 'socket.io-client'
 // Vue Components
 import PickGoodHeader from './components/PickGoodHeader.vue'
 import PickGoodFooter from './components/PickGoodFooter.vue'
 import { ConnectedStatus, DisconnectedStatus, Status } from './types/status';
+import { useStore as useStatusStore } from './store/statusStore';
+import { DisconnectDescription } from 'socket.io-client/build/esm/socket';
+import { Ref, ref } from 'vue';
 
-import config from './assets/config.json'
+const statusStore = useStatusStore()
 
-const status: Ref<string> = ref('')
-const statusColor: Ref<string> = ref('red')
-
-const setStatus = (connected: boolean) => {
-  const newStatus: Status = connected ? ConnectedStatus : DisconnectedStatus;
-  status.value = newStatus.displayString
-  statusColor.value = newStatus.color
+const setConnectedStatus = () => {
+  statusStore.setSocketIOStatus(ConnectedStatus)
+}
+const setDisconnectedStatus = (reason: string, description?: DisconnectDescription) => {
+  const newStatus: Status = DisconnectedStatus;
+  if (!newStatus.status) { // Always true
+    newStatus.reason = reason;
+    newStatus.description = description
+  }
+  statusStore.setSocketIOStatus(newStatus)
 }
 
 const socket =
@@ -24,13 +29,37 @@ const socket =
 
 socket.on('ack', () => {
   console.log('ACK')
-  setStatus(true)
+  setConnectedStatus()
+})
+socket.on('disconnect', (reason, description) => {
+  setDisconnectedStatus(reason, description)
+})
+
+// Handle user must be logged in
+const showLoginPopup = ref(true)
+const useRegister = ref(false)
+
+import { useStore as useAuthStore } from './store/authStore'
+import LoginComponent from './components/LoginComponent.vue'
+import RegisterComponent from './components/RegisterComponent.vue'
+
+const authStore = useAuthStore()
+
+authStore.initUser()
+authStore.loading.then(() => {
+  if (authStore.status.loggedIn) showLoginPopup.value = false
 })
 </script>
 
 <template>
-  <pick-good-header :status="status" :statusColor="statusColor" :config="config" />
-  <router-view></router-view>
+  <pick-good-header />
+  <div class="content">
+    <login-component v-if="showLoginPopup && !useRegister" @successful="showLoginPopup = false"
+      @gotoRegister="useRegister = true" />
+    <register-component v-else-if="showLoginPopup && useRegister"
+      @gotoLogin="useRegister = false" />
+    <router-view v-else></router-view>
+  </div>
   <pick-good-footer />
 </template>
 

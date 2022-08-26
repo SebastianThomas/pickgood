@@ -38,7 +38,9 @@ export const performSignin = async (
       throw new Error(`Password or username is wrong!`)
     }
     const uid = user.userID
+    console.log(`UID: ${uid}`)
     const accessToken = genAccessToken(uid)
+    console.log(`AccessToken: ${accessToken}`)
     const refreshToken = await RefreshToken.createAndSaveToken({ id: uid })
 
     return {
@@ -47,6 +49,7 @@ export const performSignin = async (
       userInfo: user,
     }
   } catch (err) {
+    console.log(err)
     const error: any = new Error(`Password or username is wrong!`)
     error.statusCode = '404'
     throw error
@@ -94,7 +97,7 @@ export const refreshAccessToken = async (reqToken: string) => {
  * @returns The new JWT
  */
 const genAccessToken = (userId: string) => {
-  const accessTokenJWTSecret = process.env.ACCESS_TOKEN_JWT_SECRET || ''
+  const accessTokenJWTSecret = process.env.ACCESS_TOKEN_JWT_SECRET || 'Default'
   const expiresInAccessToken =
     Number(process.env.EXPIRES_IN_ACCESS_TOKEN) || 60 * 60 * 1000
 

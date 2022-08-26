@@ -1,45 +1,59 @@
 <script setup lang="ts">
-import Configuration from '../types/Configuration';
+import { storeToRefs } from 'pinia';
+import { useStore as useStatusStore } from '../store/statusStore';
+import StatusBar from './StatusBar.vue';
 
-defineProps<{ status: string, statusColor: string, config: Configuration }>()
+const { config } = storeToRefs(useStatusStore())
+
+const showSettings = () => {
+  console.error('Show Settings not implemented')
+}
 </script>
 
 <template>
   <div class="card light-bg-card header-container">
-    <div class="left">
-      <router-link :to="{ name: 'Home' }">
-        Start
-      </router-link>
-    </div>
-
-    <div class="center">
-      {{ config.company_name }}
-    </div>
-
-    <div class="right">
-      <div class="status">
-
-        Status:
-        <span class="status-color" :style="`color: ${statusColor}`">
-          {{ status }}
-        </span>
+    <div class="top">
+      <div class="left">
+        <router-link :to="{ name: 'Home' }">
+          Start
+        </router-link>
       </div>
+
+      <div class="center">
+        {{ config.company_name }}
+      </div>
+
+      <div class="right">
+        <a @click.prevent="showSettings">
+          <font-awesome-icon :icon="['fa', 'gear']" />
+        </a>
+      </div>
+    </div>
+    <div class="status-bar">
+      <status-bar @show-settings="showSettings" />
     </div>
   </div>
 </template>
 
 <style scoped>
 .card {
-  margin: 0 0 1rem;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  width: calc(100% - 4rem);
-
-  padding: 0 2rem;
+  padding: 0.5rem 2rem;
+  margin: 0.5rem;
 }
 
-.card>* {
-  padding: 0.5rem 2rem;
+.top {
+  width: 100%;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 180px 1fr 180px;
+}
+
+.top>*:nth-child(2n - 1) {
+  padding: 0.5rem 4rem;
+}
+
+.top>*:nth-child(2n) {
+  padding: 0.5rem;
 }
 
 .left {

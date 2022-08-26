@@ -55,14 +55,20 @@ router.post(
   '/',
   // Use express-validator middleware functions
   // to validate the request body
-  body('password').trim().isLength({ min: 8 }),
+  body('pwd').trim().isLength({ min: 8 }),
   body('firstName').trim().isLength({ min: 1 }),
   body('lastName').trim().isLength({ min: 1 }),
   validateResult,
-  async (req: express.Request, res: express.Response<{}, UserRecord>) => {
-    const { password, firstName, lastName } = req.body
+  async (
+    req: express.Request,
+    res: express.Response<
+      { ok: true; newUser: User } | { ok: false; error: string },
+      UserRecord
+    >
+  ) => {
+    const { pwd, firstName, lastName } = req.body
     try {
-      const newPassword = await User.hashPwd(password)
+      const newPassword = await User.hashPwd(pwd)
 
       const newUser = await User.create({
         firstName,
@@ -70,9 +76,12 @@ router.post(
         password: newPassword,
       })
 
-      return res.status(201).json({ ok: true, id: newUser.userID })
+      return res.status(201).json({ ok: true, newUser })
     } catch (err) {
-      return res.status(400).json({ error: 'User could not be inserted.' })
+      console.log(err)
+      return res
+        .status(400)
+        .json({ ok: false, error: 'User could not be inserted.' })
     }
   }
 )

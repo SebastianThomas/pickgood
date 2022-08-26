@@ -49,18 +49,9 @@ class UserModel
   }
 
   static async getUserAtStation(userId: string): Promise<UserAtStation | null> {
-    const user: UserAtStation | null = await this.findOne<UserModel>({
-      where: { userID: userId },
-      include: [UserModel.associations.station],
+    return await UserModel.findByPk(Number(getIntIDFromHash(userId)), {
+      include: UserModel.associations.station,
     })
-    if (user === null) return null
-    // Build to use native sequelize
-    // const station = await StationModel.findOne({
-    //   where: { name: user.stationName },
-    // })
-    // return {...user, station}
-
-    return user
   }
 
   /**
@@ -132,6 +123,8 @@ UserModel.init(
     },
     stationName: {
       type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'NULL',
     },
     rank: {
       type: DataTypes.ENUM(UserRank.Administrator, UserRank.User),

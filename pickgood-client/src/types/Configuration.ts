@@ -3,4 +3,9 @@ type Configuration = {
   company_name: string
 }
 
+export const defaultConfig: Configuration = {
+  application_name: 'PickGood',
+  company_name: '',
+}
+
 export default Configuration

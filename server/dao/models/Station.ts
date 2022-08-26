@@ -15,3 +15,13 @@ StationModel.init(
 )
 
 export default StationModel
+
+// Init default station
+StationModel.findByPk('NULL').then(async (station: StationModel | null) => {
+  if (station === null)
+    station = await StationModel.create({
+      name: 'NULL',
+      description:
+        'Default station meaning that the user is currently not assigned to any station.',
+    })
+})

@@ -78,6 +78,15 @@ button:focus-visible {
   text-align: center;
 }
 
+.clickable {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.error {
+  color: red;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

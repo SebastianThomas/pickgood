@@ -13,6 +13,16 @@ initAssocs()
 // Initialize Express and socket.io server with NodeJS HTTP module
 const app = express()
 
+app.use(express.json())
+// Logging Middleware
+app.use((req, res, next) => {
+  console.log(req.url)
+  next()
+})
+// Auth Middleware
+import { authMiddleware } from './middleware/authMiddleware'
+app.use(authMiddleware)
+
 const server = http.createServer(app)
 const io = new SocketIOServer(server, {
   cors: {
@@ -55,7 +65,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Bind HTTP server to port (the one created with express and socket.io)
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 8000
 server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
 })

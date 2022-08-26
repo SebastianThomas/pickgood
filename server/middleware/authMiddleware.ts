@@ -16,7 +16,7 @@ export const authMiddleware = async (
     ) {
       const verified = jwt.verify(
         res.locals.accessToken,
-        process.env.ACCESS_TOKEN_JWT_SECRET || ''
+        process.env.ACCESS_TOKEN_JWT_SECRET || 'Default'
       )
       if (verified) {
         const decoded = jwt.decode(res.locals.accessToken) as { id: string } // jwt.JwtPayload is the id in the object

@@ -30,7 +30,14 @@ router.post(
   body('lastName').isLength({ min: 1 }),
   body('pwd').isLength({ min: 8 }),
   validateResult,
-  async (req: express.Request, res: express.Response<{}, UserRecord>) => {
+  async (
+    req: express.Request<
+      {},
+      {},
+      { firstName: string; lastName: string; pwd: string }
+    >,
+    res: express.Response<{}, UserRecord>
+  ) => {
     const { firstName, lastName, pwd } = req.body
 
     try {
@@ -47,7 +54,7 @@ router.post(
         currentStation: userInfo.stationName, // TODO: Compare current station with this in frontend and potentially update
       })
     } catch (err: any) {
-      res.status(err.statusCode || 400).json({ error: err.message })
+      res.status(Number(err.statusCode || 400)).json({ error: err.message })
     }
   }
 )
