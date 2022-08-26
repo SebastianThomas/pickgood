@@ -34,17 +34,18 @@ router.post(
     req: express.Request<
       {},
       {},
-      { firstName: string; lastName: string; pwd: string }
+      { firstName: string; lastName: string; pwd: string; station?: string }
     >,
     res: express.Response<{}, UserRecord>
   ) => {
-    const { firstName, lastName, pwd } = req.body
+    const { firstName, lastName, pwd, station } = req.body
 
     try {
       const { refreshToken, accessToken, userInfo } = await performSignin(
         firstName,
         lastName,
-        pwd
+        pwd,
+        station
       )
 
       return res.status(200).json({

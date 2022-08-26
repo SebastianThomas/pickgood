@@ -15,10 +15,12 @@ class AuthService {
     firstName,
     lastName,
     pwd,
+    station,
   }: {
     firstName: string
     lastName: string
     pwd: string
+    station?: string
   }) {
     const response: {
       refreshToken: RefreshToken<string>
@@ -30,6 +32,7 @@ class AuthService {
         firstName,
         lastName,
         pwd,
+        station,
       })
     ).data
 

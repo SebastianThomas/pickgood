@@ -2,6 +2,7 @@
 import { AxiosError } from 'axios';
 import { ref } from 'vue';
 import { useToast } from 'vue-toast-notification';
+import api from '../services/api';
 import AuthService from '../services/AuthService';
 
 const emit = defineEmits<{
@@ -13,9 +14,24 @@ const lastName = ref('')
 const firstName = ref('')
 const pwd = ref('')
 
+const useStation = ref<boolean>(false)
+const stationNames = ref<string[]>([])
+const selectedStation = ref<string>()
+
+const getStationNames = async () => {
+  try {
+    const { data } = await api.get<{ names: string[] } | { names: null, error: string }>('/stations/all')
+    if (data.names === null) throw new Error(data.error)
+    stationNames.value = data.names
+  } catch (err) {
+    useToast().error('Get station names failed.')
+    console.log(err)
+  }
+}
+
 const login = async () => {
   try {
-    await AuthService.login({ firstName: firstName.value, lastName: lastName.value, pwd: pwd.value })
+    await AuthService.login({ firstName: firstName.value, lastName: lastName.value, pwd: pwd.value, station: useStation ? selectedStation.value : undefined })
     useToast().success('Successfully logged in.', {
       duration: 5000
     })
@@ -39,6 +55,8 @@ const login = async () => {
 const gotoRegister = () => {
   emit('gotoRegister')
 }
+
+getStationNames()
 </script>
 
 <template>
@@ -51,6 +69,16 @@ const gotoRegister = () => {
       <input type="text" v-model="lastName" name="lastname" autocomplete="family-name" />
       <label for="pwd">Password: </label>
       <input type="password" v-model="pwd" name="pwd" autocomplete="current-password" />
+
+      <label for="useStation">An Station anmelden?</label>
+      <input type="checkbox" name="useStation" v-model="useStation"
+        :disabled="stationNames.length === 0" />
+      <div class=""></div>
+      <select name="station" class="station-select" :disabled="!useStation"
+        v-model="selectedStation">
+        <option v-for="name in stationNames" :key="name" :value="name">{{ name }}</option>
+      </select>
+
       <button type="submit" class="submit-button">
         Submit
       </button>
@@ -73,9 +101,9 @@ const gotoRegister = () => {
 
 .form-login {
   margin: auto;
-  max-width: 500px;
+  max-width: 600px;
   display: grid;
-  grid-template-columns: [content-start] 1fr 2fr [content-end];
+  grid-template-columns: [content-start] minmax(220px, 1fr) 2fr [content-end];
 }
 
 .form-login>* {

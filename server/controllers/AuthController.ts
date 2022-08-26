@@ -18,7 +18,8 @@ import RefreshToken from '../dao/models/RefreshToken'
 export const performSignin = async (
   firstName: string,
   lastName: string,
-  password: string
+  password: string,
+  station?: string
 ) => {
   try {
     const user = await User.findOne({
@@ -37,6 +38,12 @@ export const performSignin = async (
     if (!(await User.comparePwd(password, user.password))) {
       throw new Error(`Password or username is wrong!`)
     }
+    // Potentially update the station
+    if (typeof station !== 'undefined')
+      await user.update({
+        stationName: station,
+      })
+
     const uid = user.userID
     console.log(`UID: ${uid}`)
     const accessToken = genAccessToken(uid)
