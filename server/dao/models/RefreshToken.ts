@@ -5,6 +5,7 @@ import { DataTypes, Model } from 'sequelize'
 
 import { getHashFromIntID, getIntIDFromHash } from '../../util/dbutils'
 import sequelize from '../../state/sequelize'
+import config from '../../state/configuration'
 
 class RefreshTokenModel extends Model implements RefreshTokenType<string> {
   declare token: string
@@ -18,7 +19,7 @@ class RefreshTokenModel extends Model implements RefreshTokenType<string> {
    */
   static async createAndSaveToken(user: { id: string }) {
     const expiresInRefreshToken: number =
-      Number(process.env.EXPIRES_IN_REFRESH_TOKEN) || 60 * 60 * 24
+      Number(config.auth.expiresInSecondsRefreshToken) || 518400 // 60 * 60 * 24 * 6 = 6 days
 
     const expiredAt = new Date()
     expiredAt.setSeconds(expiredAt.getSeconds() + expiresInRefreshToken)

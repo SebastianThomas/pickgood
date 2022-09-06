@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
+import { UserRank } from 'pickgood-types'
 import User from '../dao/models/User'
 import { UserRecord } from '../types/UserRecord'
 
@@ -63,14 +64,28 @@ const handleAuthAccessHeader = (
   }
 }
 
-export const requireAuthenticated = (
-  req: Request,
-  res: Response<{}, UserRecord>,
+export const requireAuthenticated = <R>(
+  req: Request<R>,
+  res: Response<{ error: string }, UserRecord>,
   next: NextFunction
 ) => {
   if (
     res.locals.unauthenticated ||
     typeof res.locals.user?.userID === 'undefined'
+  )
+    return res.status(403).json({ error: 'Not authenticated' })
+  next()
+}
+
+export const requireAuthenticatedAsAdmin = <R>(
+  req: Request<R>,
+  res: Response<{ error: string }, UserRecord>,
+  next: NextFunction
+) => {
+  if (
+    res.locals.unauthenticated ||
+    typeof res.locals.user?.userID === 'undefined' ||
+    res.locals.user?.rank !== UserRank.Administrator
   )
     return res.status(403).json({ error: 'Not authenticated' })
   next()

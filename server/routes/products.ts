@@ -1,4 +1,5 @@
 import express from 'express'
+import Invoice from '../dao/models/Invoice'
 import Product from '../dao/models/Product'
 import ProductAtStation from '../dao/models/ProductAtStation'
 import Station from '../dao/models/Station'
@@ -39,6 +40,33 @@ router.get(
     return res.status(200).json({
       product,
     })
+  }
+)
+
+// GET /api/products/:id
+// Get all products that were bought in a given invoice
+router.get(
+  '/invoice/:id',
+  async (
+    req: express.Request<{ id: number }>,
+    res: express.Response<
+      { products: Product[] } | { products: null; error: string }
+    >
+  ) => {
+    if (typeof req.params.id !== 'number')
+      return res
+        .status(404)
+        .json({ error: 'Parameter ID must be a number.', products: null })
+    const invoice = await Invoice.findByPk(req.params.id, {
+      include: {
+        model: Product,
+      },
+    })
+    if (invoice === null)
+      return res
+        .status(404)
+        .json({ error: 'Invoice not found', products: null })
+    return res.status(200).json({ products: invoice.products })
   }
 )
 

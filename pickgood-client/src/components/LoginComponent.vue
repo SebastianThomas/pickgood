@@ -24,7 +24,7 @@ const getStationNames = async () => {
     if (data.names === null) throw new Error(data.error)
     stationNames.value = data.names
   } catch (err) {
-    useToast().error('Get station names failed.')
+    console.log('Get station names failed.')
     console.log(err)
   }
 }

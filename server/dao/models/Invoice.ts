@@ -1,22 +1,12 @@
-import { Invoice } from 'pickgood-types'
+import {
+  Invoice,
+  InvoiceStatusPossibilitiesType,
+  InvoiceStatusType,
+} from 'pickgood-types'
+import { invoiceStatus } from 'pickgood-types/lib/invoices/Invoice'
 import { DataTypes, Model } from 'sequelize'
 import sequelize from '../../state/sequelize'
-
-const invoiceStatus = <const>[
-  'Ordered',
-  'Payed',
-  'Packing',
-  'Sent',
-  'Completed',
-
-  'PaymentReminder',
-  'ProblemOrQuestion',
-  'PendingClientAnswer',
-  'PendingProductDelivery',
-]
-
-type InvoiceStatusPossibilitiesType = typeof invoiceStatus
-type InvoiceStatusType = typeof invoiceStatus[number]
+import Product from './Product'
 
 class InvoiceModel
   extends Model
@@ -24,6 +14,8 @@ class InvoiceModel
 {
   declare invoiceID: number
   declare status: InvoiceStatusType
+
+  declare products: Product[] // TODO: Verify this actually exists
 }
 InvoiceModel.init(
   {

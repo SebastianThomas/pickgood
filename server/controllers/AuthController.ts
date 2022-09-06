@@ -45,9 +45,7 @@ export const performSignin = async (
       })
 
     const uid = user.userID
-    console.log(`UID: ${uid}`)
     const accessToken = genAccessToken(uid)
-    console.log(`AccessToken: ${accessToken}`)
     const refreshToken = await RefreshToken.createAndSaveToken({ id: uid })
 
     return {

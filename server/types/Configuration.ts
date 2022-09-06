@@ -7,6 +7,7 @@ type Configuration = {
   }
   auth: {
     saltRounds: number
+    expiresInSecondsRefreshToken: number
   }
 }
 

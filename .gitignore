@@ -1,3 +1,6 @@
+tmp
+server/tests/**.local.**
+
 # Logs
 logs
 *.log

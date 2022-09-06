@@ -16,7 +16,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.1",
     "@vueuse/head": "^0.7.6",
     "axios": "^0.27.2",
-    "pickgood-types": "^4.3.2",
+    "pickgood-types": "^5.0.0",
     "pinia": "^2.0.20",
     "socket.io-client": "^4.5.1",
     "vue": "^3.2.37",

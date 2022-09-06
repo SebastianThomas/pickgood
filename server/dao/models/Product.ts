@@ -5,6 +5,7 @@ import ProductImages from './ProductImages'
 
 class ProductModel extends Model implements ProductType {
   declare productID: number
+  declare billbeeProductID: number
 
   declare title: string
   declare description: string
@@ -35,6 +36,10 @@ ProductModel.init(
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
+    },
+    billbeeProductID: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     title: {
       type: DataTypes.STRING,

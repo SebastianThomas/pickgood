@@ -45,7 +45,7 @@ const showSettings = () => {
   width: 100%;
   margin: 0;
   display: grid;
-  grid-template-columns: 180px 1fr 180px;
+  grid-template-columns: 190px 1fr 190px;
 }
 
 .top>*:nth-child(2n - 1) {
